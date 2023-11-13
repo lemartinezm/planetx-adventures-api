@@ -10,10 +10,9 @@ import {
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { Prisma } from '@prisma/client';
-import { RegisterUserRoleValidation } from './validation/validation-pipe';
+import { RegisterUserRoleValidation } from './pipes/validation-pipe';
 
 @Controller('auth')
-@UsePipes(new RegisterUserRoleValidation())
 @UsePipes(new ValidationPipe())
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
@@ -21,6 +20,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
+  @UsePipes(new RegisterUserRoleValidation())
   async register(@Body() user: RegisterUserDto) {
     try {
       const userRegistered = await this.authService.registerUser(user);
