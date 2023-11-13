@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model comment {
+  id         Int      @id
+  user_id    Int
+  comment    String   @db.VarChar(255)
+  event_id   Int
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  event      event    @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_event_id")
+  user       user     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_user_id")
+
+  @@index([event_id], map: "event_id_idx")
+  @@index([user_id], map: "user_id_idx")
+}
+
+model event {
+  id                    Int                     @id
+  name                  String                  @db.VarChar(127)
+  description           String                  @db.VarChar(511)
+  created_by            Int
+  created_at            DateTime                @default(now()) @db.Timestamp(0)
+  comment               comment[]
+  user                  user                    @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_event_created_by")
+  event_like            event_like[]
+  event_views           event_views[]
+  reservation_has_event reservation_has_event[]
+  vote                  vote[]
+
+  @@index([created_by], map: "created_by_idx")
+}
+
+model event_like {
+  id         Int      @id
+  user_id    Int
+  event_id   Int
+  created_at DateTime @db.Timestamp(0)
+  event      event    @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_event_like_event_id")
+  user       user     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_event_like_user_id")
+
+  @@index([event_id], map: "event_id_idx")
+  @@index([user_id], map: "user_id_idx")
+}
+
+model event_views {
+  id         Int      @id
+  user_id    Int
+  event_id   Int
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  event      event    @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_event_views_event_id")
+  user       user     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_event_views_user_id")
+
+  @@index([event_id], map: "event_id_idx")
+  @@index([user_id], map: "user_id_idx")
+}
+
+model reservation {
+  id                    Int                     @id
+  user_id               Int
+  to_date               DateTime                @db.Timestamp(0)
+  qr_code               String                  @db.VarChar(255)
+  created_at            DateTime                @default(now()) @db.Timestamp(0)
+  user                  user                    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reservation_user_id")
+  reservation_has_event reservation_has_event[]
+
+  @@index([user_id], map: "user_id_idx")
+}
+
+model reservation_has_event {
+  id             Int         @id
+  reservation_id Int
+  event_id       Int
+  created_at     DateTime    @default(now()) @db.Timestamp(0)
+  event          event       @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reservation_has_event_event_id")
+  reservation    reservation @relation(fields: [reservation_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_reservation_has_event_reservation_id")
+
+  @@index([event_id], map: "fk_reservation_has_event_event1_idx")
+  @@index([reservation_id], map: "fk_reservation_has_event_reservation_idx")
+}
+
+model user {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(45)
+  email       String        @unique(map: "email_UNIQUE") @db.VarChar(127)
+  password    String        @db.VarChar(255)
+  role        String        @default("user") @db.VarChar(45)
+  created_at  DateTime      @default(now()) @db.Timestamp(0)
+  comment     comment[]
+  event       event[]
+  event_like  event_like[]
+  event_views event_views[]
+  reservation reservation[]
+  vote        vote[]
+}
+
+model vote {
+  id         Int      @id
+  user_id    Int
+  event_id   Int
+  vote       Int
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  event      event    @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_vote_event_id")
+  user       user     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_vote_user_id")
+
+  @@index([event_id], map: "event_id_idx")
+  @@index([user_id], map: "user_id_idx")
+}
