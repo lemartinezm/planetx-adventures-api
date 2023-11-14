@@ -15,4 +15,13 @@ export class AuthService {
       select: { id: true, name: true, email: true },
     });
   }
+
+  async findUserByEmail(
+    email: string,
+  ): Promise<Omit<UserModel, 'created_at' | 'id'>> {
+    return await this.prisma.user.findUnique({
+      where: { email },
+      select: { name: true, email: true, role: true, password: true },
+    });
+  }
 }
