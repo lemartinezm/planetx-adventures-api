@@ -11,6 +11,7 @@ import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { Prisma } from '@prisma/client';
 import { RegisterUserRoleValidation } from './pipes/validation-pipe';
+import * as bcrypt from 'bcrypt';
 
 @Controller('auth')
 @UsePipes(new ValidationPipe())
@@ -23,7 +24,10 @@ export class AuthController {
   @UsePipes(new RegisterUserRoleValidation())
   async register(@Body() user: RegisterUserDto) {
     try {
-      const userRegistered = await this.authService.registerUser(user);
+      const hashedPass = await bcrypt.hash(user.password, 10);
+      const userWithHashedPass = { ...user, password: hashedPass };
+      const userRegistered =
+        await this.authService.registerUser(userWithHashedPass);
       return userRegistered;
     } catch (error) {
       this.logger.error('Error registering user');
