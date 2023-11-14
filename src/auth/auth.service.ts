@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { user as UserModel } from '@prisma/client';
 
@@ -10,7 +10,10 @@ export class AuthService {
   async registerUser(
     user: RegisterUserDto,
   ): Promise<Pick<UserModel, 'id' | 'name' | 'email'>> {
-    return this.prisma.user.create({
+    const existingUser = await this.findUserByEmail(user.email);
+    if (existingUser)
+      throw new BadRequestException('The email is already registered');
+    return await this.prisma.user.create({
       data: user,
       select: { id: true, name: true, email: true },
     });
