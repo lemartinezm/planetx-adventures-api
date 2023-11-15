@@ -17,9 +17,23 @@ import { RegisterUserRoleValidation } from './pipes/validation-pipe';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import {
+  BadRequestResponse,
+  CreatedResponse,
+  OkResponse,
+  UnauthorizedResponse,
+} from './entities/responses.entity';
 
 @Controller('auth')
 @UsePipes(new ValidationPipe())
+@ApiTags('Auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
@@ -31,6 +45,14 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @UsePipes(new RegisterUserRoleValidation())
+  @ApiCreatedResponse({
+    description: 'User registered successfully',
+    type: CreatedResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Something went wrong',
+    type: BadRequestResponse,
+  })
   async register(@Body() user: RegisterUserDto) {
     try {
       const hashedPass = await bcrypt.hash(user.password, 10);
@@ -49,6 +71,15 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ description: 'User logged successfully', type: OkResponse })
+  @ApiBadRequestResponse({
+    description: 'Something went wrong',
+    type: BadRequestResponse,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized to login',
+    type: UnauthorizedResponse,
+  })
   async login(@Body() loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
     const userFound = await this.authService.findUserByEmail(email);
