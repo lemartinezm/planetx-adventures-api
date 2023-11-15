@@ -110,6 +110,7 @@ describe('AuthController', () => {
         password: 'password123',
       };
       const userFound = {
+        id: 1,
         name: 'Test User',
         email: 'test@example.com',
         role: 'user',
@@ -137,7 +138,7 @@ describe('AuthController', () => {
         userFound.password,
       );
       expect(jwtService.signAsync).toHaveBeenCalledWith({
-        name: userFound.name,
+        id: userFound.id,
         email: userFound.email,
         role: userFound.role,
       });
@@ -160,6 +161,7 @@ describe('AuthController', () => {
         password: 'invalidPass',
       };
       const userFound = {
+        id: 1,
         name: 'Test User',
         email: 'test@example.com',
         role: 'user',

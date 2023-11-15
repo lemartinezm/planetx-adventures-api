@@ -95,6 +95,7 @@ describe('AuthService', () => {
         password: 'password123',
       };
       const existingUser = {
+        id: 1,
         name: 'Jane Smith',
         email: 'johndoe@example.com',
         role: 'user',

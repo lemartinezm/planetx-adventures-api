@@ -19,12 +19,10 @@ export class AuthService {
     });
   }
 
-  async findUserByEmail(
-    email: string,
-  ): Promise<Omit<UserModel, 'created_at' | 'id'>> {
+  async findUserByEmail(email: string): Promise<Omit<UserModel, 'created_at'>> {
     return await this.prisma.user.findUnique({
       where: { email },
-      select: { name: true, email: true, role: true, password: true },
+      select: { id: true, name: true, email: true, role: true, password: true },
     });
   }
 }

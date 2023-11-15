@@ -58,13 +58,13 @@ export class AuthController {
     if (!passwordMatches) throw new UnauthorizedException();
 
     const payload = {
-      name: userFound.name,
+      id: userFound.id,
       email: userFound.email,
       role: userFound.role,
     };
 
     return {
-      message: `Welcome ${payload.name}`,
+      message: `Welcome ${userFound.name}`,
       access_token: await this.jwtService.signAsync(payload),
     };
   }
