@@ -8,7 +8,7 @@ datasource db {
 }
 
 model comment {
-  id         Int      @id
+  id         Int      @id @unique(map: "id_UNIQUE") @default(autoincrement())
   user_id    Int
   comment    String   @db.VarChar(255)
   event_id   Int
@@ -21,7 +21,7 @@ model comment {
 }
 
 model event {
-  id                    Int                     @id
+  id                    Int                     @id @unique(map: "id_UNIQUE") @default(autoincrement())
   name                  String                  @db.VarChar(127)
   description           String                  @db.VarChar(511)
   created_by            Int
@@ -37,7 +37,7 @@ model event {
 }
 
 model event_like {
-  id         Int      @id
+  id         Int      @id @unique(map: "id_UNIQUE") @default(autoincrement())
   user_id    Int
   event_id   Int
   created_at DateTime @db.Timestamp(0)
@@ -49,7 +49,7 @@ model event_like {
 }
 
 model event_views {
-  id         Int      @id
+  id         Int      @id @unique(map: "id_UNIQUE") @default(autoincrement())
   user_id    Int
   event_id   Int
   created_at DateTime @default(now()) @db.Timestamp(0)
@@ -61,7 +61,7 @@ model event_views {
 }
 
 model reservation {
-  id                    Int                     @id
+  id                    Int                     @id @unique(map: "id_UNIQUE") @default(autoincrement())
   user_id               Int
   to_date               DateTime                @db.Timestamp(0)
   qr_code               String                  @db.VarChar(255)
@@ -73,7 +73,7 @@ model reservation {
 }
 
 model reservation_has_event {
-  id             Int         @id
+  id             Int         @id @unique(map: "id_UNIQUE") @default(autoincrement())
   reservation_id Int
   event_id       Int
   created_at     DateTime    @default(now()) @db.Timestamp(0)
@@ -85,7 +85,7 @@ model reservation_has_event {
 }
 
 model user {
-  id          Int           @id @default(autoincrement())
+  id          Int           @id @unique(map: "id_UNIQUE") @default(autoincrement())
   name        String        @db.VarChar(45)
   email       String        @unique(map: "email_UNIQUE") @db.VarChar(127)
   password    String        @db.VarChar(255)
@@ -100,7 +100,7 @@ model user {
 }
 
 model vote {
-  id         Int      @id
+  id         Int      @id @unique(map: "id_UNIQUE") @default(autoincrement())
   user_id    Int
   event_id   Int
   vote       Int
