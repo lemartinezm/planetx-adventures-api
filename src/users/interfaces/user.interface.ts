@@ -3,3 +3,11 @@ export interface User {
   email: string;
   password: string;
 }
+
+export interface JwtUser {
+  id: number;
+  email: string;
+  role: string;
+  iat: number;
+  exp: number;
+}
