@@ -1,6 +1,10 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseIntPipe,
   Post,
   Request,
   UseGuards,
@@ -27,6 +31,15 @@ export class EventsController {
     // Obtain logged in user id
     const { id } = req.user;
     const event: Event = { ...createEventDto, created_by: id };
-    return this.eventsService.createEvent(event);
+    return await this.eventsService.createEvent(event);
+  }
+
+  @Get()
+  async getEvents(
+    @Param('p', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Param('epp', new DefaultValuePipe(5), ParseIntPipe)
+    elementsPerPage: number,
+  ) {
+    return await this.eventsService.findAll({ page, elementsPerPage });
   }
 }
