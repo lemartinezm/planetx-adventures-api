@@ -27,6 +27,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { CreateCommentDto } from './dto/create-comment.dto';
 
 @Controller('events')
 @UsePipes(new ValidationPipe())
@@ -72,5 +73,20 @@ export class EventsController {
   ) {
     const { id: userId } = req.user;
     return await this.eventsService.likeEvent({ eventId, userId });
+  }
+
+  @Post(':eventId/comment')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Event commented successfully' })
+  @ApiBadRequestResponse({ description: 'Something went wrong' })
+  async commentEvent(
+    @Body() createCommentDto: CreateCommentDto,
+    @Param('eventId', ParseIntPipe) eventId: number,
+    @Request() request: Request & { user: JwtUser },
+  ) {
+    const { id: userId } = request.user;
+    const { comment } = createCommentDto;
+    return await this.eventsService.commentEvent({ comment, userId, eventId });
   }
 }

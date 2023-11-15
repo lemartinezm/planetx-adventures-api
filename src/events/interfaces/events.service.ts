@@ -23,3 +23,9 @@ export interface LikeEventParams {
   eventId: number;
   userId: number;
 }
+
+export interface CommentEventParams {
+  eventId: number;
+  userId: number;
+  comment: string;
+}

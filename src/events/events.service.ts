@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma.service';
 import { event as EventModel } from '@prisma/client';
 import { Event } from './entities/event.entity';
 import {
+  CommentEventParams,
   FindAllQueryParams,
   FindAllResponse,
   LikeEventParams,
@@ -82,6 +83,13 @@ export class EventsService {
     return await this.prismaService.event_like.create({
       data: { user_id: userId, event_id: eventId },
       select: { event_id: true, user_id: true },
+    });
+  }
+
+  async commentEvent({ eventId, userId, comment }: CommentEventParams) {
+    return await this.prismaService.comment.create({
+      data: { event_id: eventId, user_id: userId, comment },
+      select: { event_id: true, user_id: true, comment: true },
     });
   }
 }
