@@ -18,3 +18,8 @@ export type FindAllResponse = PaginatedResponse<
     }
   >
 >;
+
+export interface LikeEventParams {
+  eventId: number;
+  userId: number;
+}

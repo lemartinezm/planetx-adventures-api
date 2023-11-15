@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { event as EventModel } from '@prisma/client';
 import { Event } from './entities/event.entity';
 import {
   FindAllQueryParams,
   FindAllResponse,
+  LikeEventParams,
 } from './interfaces/events.service';
 import { PaginatedResponse } from 'src/interfaces/response.interface';
 
@@ -67,5 +68,20 @@ export class EventsService {
       hasPreviousPage: page > 1,
     };
     return resultPaginated;
+  }
+
+  async likeEvent({ eventId, userId }: LikeEventParams) {
+    const eventIsLiked = await this.prismaService.event_like.findFirst({
+      where: { event_id: eventId, AND: { user_id: userId } },
+    });
+
+    // TODO: agregar la opcion de quitar like
+    if (eventIsLiked)
+      throw new ConflictException('User already liked the event');
+
+    return await this.prismaService.event_like.create({
+      data: { user_id: userId, event_id: eventId },
+      select: { event_id: true, user_id: true },
+    });
   }
 }

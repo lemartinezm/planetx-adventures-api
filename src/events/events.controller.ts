@@ -6,6 +6,8 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
+  Query,
   Request,
   UseGuards,
   UsePipes,
@@ -18,6 +20,8 @@ import { AuthGuard } from '../auth/auth.guard';
 import { JwtUser } from 'src/users/interfaces/user.interface';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiQuery,
@@ -50,10 +54,23 @@ export class EventsController {
   @ApiQuery({ name: 'p', required: false, description: 'Page number' })
   @ApiQuery({ name: 'epp', required: false, description: 'Elements per page' })
   async getEvents(
-    @Param('p', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Param('epp', new DefaultValuePipe(5), ParseIntPipe)
+    @Query('p', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('epp', new DefaultValuePipe(5), ParseIntPipe)
     elementsPerPage: number,
   ) {
     return await this.eventsService.findAll({ page, elementsPerPage });
+  }
+
+  @Put(':eventId/like')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Event liked successfully' })
+  @ApiConflictResponse({ description: 'User already liked the event' })
+  async likeEvent(
+    @Param('eventId', ParseIntPipe) eventId: number,
+    @Request() req: Request & { user: JwtUser },
+  ) {
+    const { id: userId } = req.user;
+    return await this.eventsService.likeEvent({ eventId, userId });
   }
 }
