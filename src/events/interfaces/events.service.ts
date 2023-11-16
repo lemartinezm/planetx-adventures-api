@@ -29,3 +29,9 @@ export interface CommentEventParams {
   userId: number;
   comment: string;
 }
+
+export interface VoteEventParams {
+  eventId: number;
+  userId: number;
+  vote: number;
+}

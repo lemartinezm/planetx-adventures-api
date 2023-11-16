@@ -7,6 +7,7 @@ import {
   FindAllQueryParams,
   FindAllResponse,
   LikeEventParams,
+  VoteEventParams,
 } from './interfaces/events.service';
 import { PaginatedResponse } from 'src/interfaces/response.interface';
 
@@ -90,6 +91,20 @@ export class EventsService {
     return await this.prismaService.comment.create({
       data: { event_id: eventId, user_id: userId, comment },
       select: { event_id: true, user_id: true, comment: true },
+    });
+  }
+
+  async voteEvent({ eventId, userId, vote }: VoteEventParams) {
+    const eventIsVoted = await this.prismaService.vote.findFirst({
+      where: { event_id: eventId, AND: { user_id: userId } },
+    });
+
+    if (eventIsVoted)
+      throw new ConflictException('User already voted the event');
+
+    return await this.prismaService.vote.create({
+      data: { event_id: eventId, user_id: userId, vote },
+      select: { event_id: true, user_id: true, vote: true },
     });
   }
 }

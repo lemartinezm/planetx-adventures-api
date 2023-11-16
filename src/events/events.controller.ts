@@ -28,6 +28,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { VoteEventDto } from './dto/vote-event.dto';
 
 @Controller('events')
 @UsePipes(new ValidationPipe())
@@ -88,5 +89,20 @@ export class EventsController {
     const { id: userId } = request.user;
     const { comment } = createCommentDto;
     return await this.eventsService.commentEvent({ comment, userId, eventId });
+  }
+
+  @Post(':eventId/vote')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Event voted successfully' })
+  @ApiBadRequestResponse({ description: 'Something went wrong' })
+  async voteEvent(
+    @Body() voteEventDto: VoteEventDto,
+    @Param('eventId', ParseIntPipe) eventId: number,
+    @Request() request: Request & { user: JwtUser },
+  ) {
+    const { id: userId } = request.user;
+    const { vote } = voteEventDto;
+    return await this.eventsService.voteEvent({ eventId, userId, vote });
   }
 }
