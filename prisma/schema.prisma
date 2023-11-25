@@ -111,3 +111,13 @@ model vote {
   @@index([event_id], map: "event_id_idx")
   @@index([user_id], map: "user_id_idx")
 }
+
+model ticket {
+  id               Int      @id @unique(map: "id_UNIQUE") @default(autoincrement())
+  name             String   @db.VarChar(45)
+  reservation_date DateTime @db.Timestamp(0)
+  seat_code        String   @db.VarChar(2)
+  travel_from      String   @db.VarChar(12)
+  travel_to        String   @db.VarChar(12)
+  created_at       DateTime @default(now()) @db.Timestamp(0)
+}
